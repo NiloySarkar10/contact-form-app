@@ -52,6 +52,6 @@ jobs:
       # Step 7: Deploy to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         run: |
-          eb init contact-form-app-2 --platform node.js --region us-east-1
+          eb init contact-form-app-2 --platform node.js --region ap-south-1
           eb use Contact-form-app-2-env
           eb deploy --staged
