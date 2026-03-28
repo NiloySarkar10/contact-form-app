@@ -1,7 +1,4 @@
-name: CI Pipeline
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+name: CI/CD Pipeline
 
 on:
   push:
@@ -9,24 +6,52 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     defaults:
       run:
-        working-directory: ./frontend   # IMPORTANT (Next.js app)
+        working-directory: ./frontend   # Next.js app location
 
     steps:
+      # Step 1: Checkout the repo
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Setup Node.js
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
+      # Step 4: Build Next.js app
       - name: Build app
         run: npm run build
+
+      # Step 5: Install AWS CLI & EB CLI
+      - name: Install AWS CLI & EB CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install --upgrade awscli awsebcli
+
+      # Step 6: Configure AWS credentials
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set default.region us-east-1   # change if your EB is in a different region
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Step 7: Deploy to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          eb init contact-form-app-2 --platform node.js --region us-east-1
+          eb use Contact-form-app-2-env
+          eb deploy --staged
