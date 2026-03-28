@@ -12,6 +12,9 @@ export default function Home() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Deliberate syntax error to see if CI catches this.
+  const a = ;
+
   const handleChange = (field: string, value: string) => {
     setForm((prev) => ({
       ...prev,
