@@ -32,12 +32,13 @@ jobs:
       - name: Build app
         run: npm run build
 
-      # Step 5: Install AWS CLI & EB CLI
-      - name: Install AWS CLI & EB CLI
+      # Step 5: Install AWS CLI, EB CLI & CDK
+      - name: Install AWS tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-pip
+          sudo apt-get install -y python3-pip jq
           pip3 install --upgrade awscli awsebcli
+          npm install -g aws-cdk
 
       # Step 6: Configure AWS credentials
       - name: Configure AWS credentials
@@ -50,7 +51,23 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      # Step 7: Deploy to Elastic Beanstalk
+      # Step 7: Deploy Infrastructure using CDK
+      - name: Deploy Infrastructure (CDK)
+        run: |
+          cd ../infra
+          npm install
+          cdk deploy --require-approval never --outputs-file outputs.json
+
+      # Step 8: Print SQS URL from CDK
+      - name: Print SQS URL
+        run: |
+          cd ../infra
+          echo "==== CDK OUTPUTS ===="
+          cat outputs.json
+          echo "====================="
+          echo "👉 Copy QueueUrl and update EB environment variable SQS_URL"
+
+      # Step 9: Deploy to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         run: |
           eb init contact-form-app-2 --platform node.js --region ap-south-1
