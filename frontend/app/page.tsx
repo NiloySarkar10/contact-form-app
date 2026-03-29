@@ -56,7 +56,7 @@ export default function Home() {
 
   return (
     <main className="p-10 max-w-md mx-auto">
-      <h1 className="text-xl mb-4">Contact Form (via Email)</h1>
+      <h1 className="text-xl mb-4">Contact Form</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
