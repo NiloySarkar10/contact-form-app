@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         }
 
         // TEMP: simulate queue
-        console.log("Sending to SQS:", { name, email, message });
+        console.log("Sending to SQS:");
 
         try {
             await sqs.send(

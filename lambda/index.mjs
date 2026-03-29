@@ -9,11 +9,13 @@ export const handler = async (event) => {
     const body = JSON.parse(record.body);
     const { name, message } = body;
 
+    const sesVerifiedEmail = process.env.SES_VERIFIED_EMAIL;
+
     await ses.send(
       new SendEmailCommand({
-        Source: "YOUR_VERIFIED_EMAIL@gmail.com",
+        Source: sesVerifiedEmail,
         Destination: {
-          ToAddresses: ["YOUR_VERIFIED_EMAIL@gmail.com"],
+          ToAddresses: [sesVerifiedEmail],
         },
         Message: {
           Subject: { Data: "Thanks for contacting us!" },
