@@ -63,11 +63,11 @@ jobs:
           cd ../lambda
           zip -r ../lambda.zip .
           aws lambda update-function-code \
-            --function-name contact-form-lambda \
+            --function-name contact-form-processor \
             --zip-file fileb://../lambda.zip
           # Update environment variables for Lambda
           aws lambda update-function-configuration \
-            --function-name contact-form-lambda \
+            --function-name contact-form-processor \
             --environment Variables="{SQS_URL=${SQS_URL},SES_EMAIL_FROM=${SES_EMAIL_FROM},AWS_REGION=${AWS_REGION}}"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
